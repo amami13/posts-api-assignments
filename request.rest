@@ -1,0 +1,21 @@
+// posts requests
+
+GET http://localhost:3000/posts
+
+GET http://localhost:3000/post?sender=673b12b31d4adf85ab35c840
+
+Get http://localhost:3000/post/674340937f923c00ebeaebfe
+
+PUT http://localhost:3000/post/674340937f923c00ebeaebfe
+Content-Type: application/json
+{
+  "content": "Test change post"
+}
+
+POST http://localhost:3000/post 
+Content-Type: application/json
+{
+    "title": "Test",
+    "content": "Test message",
+    "sender": "rest test"
+}
