@@ -50,15 +50,34 @@ router.get('/post', async (req, res) => {
     }
   });
 
-  module.exports = router;
+// GET route made to fetch all posts made by ID
+router.get('/post/:id', async (req, res) => {
+  try {
+    // Fetch all posts from the Post model by sender ID
+    const posts = await Post.findById(req.params.id);
+    if (!posts) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    // Return the posts as a JSON response
+    res.status(200).json(posts);
+  } catch (error) {
+    // Handle any errors that occur during the fetch
+    res.status(500).json({ message: 'Error fetching posts', error });
+  }
+});
 
 
+// UPDATE route made to fetch all posts made by ID
+router.put('/post/:id', async (req, res) => {
+  try {
+    // Update the post and return the updated document
+    const post = await Post.findByIdAndUpdate(req.params.id,req.body);
 
+    res.status(200).json(post);
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating post', error });
+  }
+});
 
-
-
-
-
-
-
- 
+module.exports = router;
