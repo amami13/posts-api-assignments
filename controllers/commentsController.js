@@ -40,5 +40,48 @@ router.get("/comment/:postId", async (req, res) => {
     }
 });
 
+// Update an existing comment
+router.put("/comment/:commentId", async (req, res) => {
+    const { commentId } = req.params;
+    const { message, sender, postId } = req.body;
+
+    if (!message || !sender || !postId) {
+        return res.status(400).json({ message: "Message, sender and postId are required" });
+    }
+
+    try {
+        const updatedComment = await Comment.findByIdAndUpdate(
+            commentId,
+            { message, sender, postId },
+            { new: true, runValidators: true } // Options to return the updated document and run validation
+        );
+
+        if (!updatedComment) {
+            return res.status(404).json({ message: "Comment not found" });
+        }
+
+        res.status(200).json(updatedComment);
+    } catch (error) {
+        res.status(500).json({ message: "Error updating comment", error });
+    }
+});
+
+// Delete an existing comment
+router.delete("/comment/:commentId", async (req, res) => {
+    const { commentId } = req.params;
+
+    try {
+        const deletedComment = await Comment.findByIdAndDelete(commentId);
+
+        if (!deletedComment) {
+            return res.status(404).json({ message: "Comment not found" });
+        }
+
+        res.status(200).json({ message: "Comment deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Error deleting comment", error });
+    }
+});
+
 
 module.exports = router;
