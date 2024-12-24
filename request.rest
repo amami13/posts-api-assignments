@@ -19,3 +19,26 @@ Content-Type: application/json
     "content": "Test message",
     "sender": "rest test"
 }
+
+// comments requests
+POST http://localhost:3000/comment/
+Content-Type: application/json
+{
+  "message": "Test comment",
+  "sender": "Test Sender",
+  "postId": "674340937f923c00ebeaebfe"
+}
+
+GET http://localhost:3000/comment
+
+GET http://localhost:3000/comment/674352d71414f65180ff25e0
+
+DELETE http://localhost:3000/comment/674359beee72b211cc05785e
+
+PUT http://localhost:3000/comment/674359beee72b211cc05785e
+Content-Type: application/json
+{
+    "message": "Test",
+    "postId": "67434f56f3b4d522b88ff718",
+    "sender": "TestUser"
+}
