@@ -1,13 +1,14 @@
-const express = require("express");
+import express, { Request, Response } from "express";
+import Comment, { IComment } from "../models/Comment";
+
 const router = express.Router();
-const Comment = require("../models/Comment");
 
 // Create a new comment
-router.post("/comment", async (req, res) => {
-    const { message, sender, postId } = req.body;
+router.post("/comment", async (req: Request, res: Response) => {
+    const { message, sender, postId }: IComment = req.body;
 
     if (!message || !sender || !postId) {
-        return res.status(400).json({ message: "Message, sender and postId are required" });
+        return res.status(400).json({ message: "Message, sender, and postId are required" });
     }
 
     try {
@@ -20,8 +21,8 @@ router.post("/comment", async (req, res) => {
     }
 });
 
-// GET route made to fetch all comments
-router.get('/comment', async (req, res) => {  
+// Fetch all comments
+router.get("/comment", async (_req: Request, res: Response) => {
     try {
         const comments = await Comment.find();
         res.status(200).json(comments);
@@ -30,8 +31,8 @@ router.get('/comment', async (req, res) => {
     }
 });
 
-// Get all comments for a post
-router.get("/comment/:postId", async (req, res) => {
+// Fetch all comments for a post
+router.get("/comment/:postId", async (req: Request, res: Response) => {
     try {
         const comments = await Comment.find({ postId: req.params.postId });
         res.status(200).json(comments);
@@ -41,19 +42,19 @@ router.get("/comment/:postId", async (req, res) => {
 });
 
 // Update an existing comment
-router.put("/comment/:commentId", async (req, res) => {
+router.put("/comment/:commentId", async (req: Request, res: Response) => {
     const { commentId } = req.params;
-    const { message, sender, postId } = req.body;
+    const { message, sender, postId }: IComment = req.body;
 
     if (!message || !sender || !postId) {
-        return res.status(400).json({ message: "Message, sender and postId are required" });
+        return res.status(400).json({ message: "Message, sender, and postId are required" });
     }
 
     try {
         const updatedComment = await Comment.findByIdAndUpdate(
             commentId,
             { message, sender, postId },
-            { new: true, runValidators: true } // Options to return the updated document and run validation
+            { new: true, runValidators: true }
         );
 
         if (!updatedComment) {
@@ -67,7 +68,7 @@ router.put("/comment/:commentId", async (req, res) => {
 });
 
 // Delete an existing comment
-router.delete("/comment/:commentId", async (req, res) => {
+router.delete("/comment/:commentId", async (req: Request, res: Response) => {
     const { commentId } = req.params;
 
     try {
@@ -83,5 +84,4 @@ router.delete("/comment/:commentId", async (req, res) => {
     }
 });
 
-
-module.exports = router;
+export default router;
