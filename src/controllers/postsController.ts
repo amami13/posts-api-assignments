@@ -1,76 +1,76 @@
-import express, { Request, Response } from 'express';
-import Post, { IPost } from '../models/Post';
+import postModel from "../models/posts_model";
+import { Request, Response } from "express";
 
-const router = express.Router();
-
-// Create a new post
-router.post("/post", async (req: Request, res: Response) => {
-    const { title, sender, content }: IPost = req.body;
-
-    if (!title || !sender || !content) {
-        return res.status(400).json({ message: "Title, sender, and content are required" });
+const getAllPosts = async (req: Request, res: Response) => {
+  const filter = req.query.owner;
+  try {
+    if (filter) {
+      const posts = await postModel.find({ owner: filter });
+      res.send(posts);
+    } else {
+      const posts = await postModel.find();
+      res.send(posts);
     }
+  } catch (error) {
+    res.status(400).send(error);
+  }
+};
 
-    try {
-        const newPost = new Post({ title, sender, content });
-        await newPost.save();
+const getPostById = async (req: Request, res: Response) => {
+  const postId = req.params.id;
 
-        res.status(201).json(newPost);
-    } catch (error) {
-        res.status(500).json({ message: `Error saving post: ${error}`, error });
+  try {
+    const post = await postModel.findById(postId);
+    if (post != null) {
+      res.send(post);
+    } else {
+      res.status(404).send("Post not found");
     }
-});
+  } catch (error) {
+    res.status(400).send(error);
+  }
+};
 
-// Fetch all posts
-router.get("/posts", async (_req: Request, res: Response) => {
+const createPost = async (req: Request, res: Response) => {
+  const postBody = req.body;
+  try {
+    const post = await postModel.create(postBody);
+    res.status(201).send(post);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+};
+
+const deletePost = async (req: Request, res: Response) => {
+  const postId = req.params.id;
+  try {
+    const rs = await postModel.findByIdAndDelete(postId);
+    res.status(200).send(rs);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+};
+
+const updatePost = async (req: Request, res: Response) => {
+    const postId = req.params.id;
+    const postBody = req.body;
     try {
-        const posts = await Post.find();
-        res.status(200).json(posts);
-    } catch (error) {
-        res.status(500).json({ message: "Error fetching posts", error });
-    }
-});
-
-// Fetch posts by sender
-router.get("/post", async (req: Request, res: Response) => {
-    const { sender } = req.query;
-
-    try {
-        const posts = await Post.find({ sender });
-        res.status(200).json(posts);
-    } catch (error) {
-        res.status(500).json({ message: "Error fetching posts", error });
-    }
-});
-
-// Fetch a post by ID
-router.get("/post/:id", async (req: Request, res: Response) => {
-    try {
-        const post = await Post.findById(req.params.id);
-
+        const post = await postModel.findByIdAndUpdate(postId, postBody, { new: true });
         if (!post) {
-            return res.status(404).json({ message: "Post not found" });
+            return res.status(404).send({ message: "Post not found" });
         }
-
-        res.status(200).json(post);
+        res.send(post);
     } catch (error) {
-        res.status(500).json({ message: "Error fetching post", error });
+        res.status(400).send(error);
     }
-});
+};
 
-// Update a post by ID
-router.put("/post/:id", async (req: Request, res: Response) => {
-    try {
-        const post = await Post.findByIdAndUpdate(req.params.id, req.body, { new: true });
 
-        if (!post) {
-            return res.status(404).json({ message: "Post not found" });
-        }
 
-        res.status(200).json(post);
-    } catch (error) {
-        res.status(500).json({ message: "Error updating post", error });
-    }
-});
-
-export default router;
+export default {
+  getAllPosts,
+  createPost,
+  deletePost,
+  getPostById,
+  updatePost,
+};
