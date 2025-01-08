@@ -189,11 +189,3 @@ describe("Auth Tests", () => {
     expect(response4.statusCode).toBe(201);
   });
 });
-
-function beforeAll(arg0: () => Promise<void>) {
-    throw new Error("Function not implemented.");
-}
-function afterAll(arg0: (done: any) => void) {
-    throw new Error("Function not implemented.");
-}
-
