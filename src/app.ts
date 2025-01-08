@@ -1,6 +1,6 @@
 import initApp from "./server";
 const port = process.env.PORT;
-// debug - remove
+
 console.log("1");
 initApp().then((app) => {
   app.listen(port, () => {
