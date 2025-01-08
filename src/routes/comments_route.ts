@@ -9,6 +9,8 @@ router.get("/:id", commentsController.getById.bind(commentsController));
 
 router.post("/", authMiddleware, commentsController.create.bind(commentsController));
 
+router.post("/:id", authMiddleware, commentsController.updateItem.bind(commentsController));
+
 router.delete("/:id", authMiddleware, commentsController.deleteItem.bind(commentsController));
 
 export default router;

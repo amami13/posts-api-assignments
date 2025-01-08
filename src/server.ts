@@ -3,16 +3,16 @@ dotenv.config();
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import express, { Express } from "express";
-import postsRoute from "./routes/post_routes";
-import commentsRoute from "./routes/comments_route";
-import authRoutes from "./routes/user_route";
+import posts_route from "./routes/post_routes";
+import comments_route from "./routes/comments_route";
+import user_route from "./routes/user_route";
 
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use("/posts", postsRoute);
-app.use("/comments", commentsRoute);
-app.use("/auth", authRoutes);
+app.use("/posts", posts_route);
+app.use("/comments", comments_route);
+app.use("/auth", user_route);
 
 const db = mongoose.connection;
 db.on("error", (error) => console.error(error));

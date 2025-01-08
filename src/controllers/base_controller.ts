@@ -24,7 +24,6 @@ class BaseController<T> {
 
     async getById(req: Request, res: Response) {
         const id = req.params.id;
-
         try {
             const item = await this.model.findById(id);
             if (item != null) {
@@ -42,6 +41,17 @@ class BaseController<T> {
         try {
             const item = await this.model.create(body);
             res.status(201).send(item);
+        } catch (error) {
+            res.status(400).send(error);
+        }
+    };
+
+    async updateItem(req: Request, res: Response) {
+        const id = req.params.id;
+        const body = req.body;
+        try {
+            const rs = await this.model.findByIdAndUpdate(id, body, { new: true });
+            res.status(200).send(rs);
         } catch (error) {
             res.status(400).send(error);
         }
