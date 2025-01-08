@@ -4,7 +4,7 @@
     "description": "Nice Store!",
     "main": "app.js",
     "scripts": {
-        "start": "npx tsc && node dist/app.js"
+        "start": "npx tsc && node dist/src/app.js"
     },
     "keywords": [],
     "author": "",
