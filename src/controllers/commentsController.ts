@@ -1,87 +1,75 @@
-import express, { Request, Response } from "express";
-import Comment, { IComment } from "../models/Comment";
+import commentModel from "../models/comments_model";
+import { Request, Response } from "express";
 
-const router = express.Router();
-
-// Create a new comment
-router.post("/comment", async (req: Request, res: Response) => {
-    const { message, sender, postId }: IComment = req.body;
-
-    if (!message || !sender || !postId) {
-        return res.status(400).json({ message: "Message, sender, and postId are required" });
+const getAllcomments = async (req: Request, res: Response) => {
+  const filter = req.query.owner;
+  try {
+    if (filter) {
+      const comments = await commentModel.find({ owner: filter });
+      res.send(comments);
+    } else {
+      const comments = await commentModel.find();
+      res.send(comments);
     }
+  } catch (error) {
+    res.status(400).send(error);
+  }
+};
 
+const getcommentById = async (req: Request, res: Response) => {
+  const commentId = req.params.id;
+  try {
+    const comment = await commentModel.findById(commentId);
+    if (comment != null) {
+      res.send(comment);
+    } else {
+      res.status(404).send("comment not found");
+    }
+  } catch (error) {
+    res.status(400).send(error);
+  }
+};
+
+const createcomment = async (req: Request, res: Response) => {
+  const commentBody = req.body;
+  try {
+    const comment = await commentModel.create(commentBody);
+    res.status(201).send(comment);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+};
+
+const deletecomment = async (req: Request, res: Response) => {
+  const commentId = req.params.id;
+  try {
+    const rs = await commentModel.findByIdAndDelete(commentId);
+    res.status(200).send(rs);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+};
+
+const updatecomment = async (req: Request, res: Response) => {
+    const commentId = req.params.id;
+    const commentBody = req.body;
     try {
-        const newComment = new Comment({ message, sender, postId });
-        await newComment.save();
-
-        res.status(201).json(newComment);
-    } catch (error) {
-        res.status(500).json({ message: "Error saving comment", error });
-    }
-});
-
-// Fetch all comments
-router.get("/comment", async (_req: Request, res: Response) => {
-    try {
-        const comments = await Comment.find();
-        res.status(200).json(comments);
-    } catch (error) {
-        res.status(500).json({ message: "Error fetching comments", error });
-    }
-});
-
-// Fetch all comments for a post
-router.get("/comment/:postId", async (req: Request, res: Response) => {
-    try {
-        const comments = await Comment.find({ postId: req.params.postId });
-        res.status(200).json(comments);
-    } catch (error) {
-        res.status(500).json({ message: "Error fetching comments", error });
-    }
-});
-
-// Update an existing comment
-router.put("/comment/:commentId", async (req: Request, res: Response) => {
-    const { commentId } = req.params;
-    const { message, sender, postId }: IComment = req.body;
-
-    if (!message || !sender || !postId) {
-        return res.status(400).json({ message: "Message, sender, and postId are required" });
-    }
-
-    try {
-        const updatedComment = await Comment.findByIdAndUpdate(
-            commentId,
-            { message, sender, postId },
-            { new: true, runValidators: true }
-        );
-
-        if (!updatedComment) {
-            return res.status(404).json({ message: "Comment not found" });
+        const comment = await commentModel.findByIdAndUpdate(commentId, commentBody, { new: true });
+        if (!comment) {
+            return res.status(404).send({ message: "comment not found" });
         }
-
-        res.status(200).json(updatedComment);
+        res.send(comment);
     } catch (error) {
-        res.status(500).json({ message: "Error updating comment", error });
+        res.status(400).send(error);
     }
-});
+};
 
-// Delete an existing comment
-router.delete("/comment/:commentId", async (req: Request, res: Response) => {
-    const { commentId } = req.params;
 
-    try {
-        const deletedComment = await Comment.findByIdAndDelete(commentId);
 
-        if (!deletedComment) {
-            return res.status(404).json({ message: "Comment not found" });
-        }
-
-        res.status(200).json({ message: "Comment deleted successfully" });
-    } catch (error) {
-        res.status(500).json({ message: "Error deleting comment", error });
-    }
-});
-
-export default router;
+export default {
+  getAllcomments,
+  createcomment,
+  deletecomment,
+  getcommentById,
+  updatecomment,
+};
