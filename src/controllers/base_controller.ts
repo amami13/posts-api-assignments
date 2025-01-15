@@ -49,18 +49,32 @@ class BaseController<T> {
     async updateItem(req: Request, res: Response) {
         const id = req.params.id;
         const body = req.body;
+    
         try {
+            if (!id || id.trim() === "") {
+                return res.status(400).send("ID is required");
+            }
+    
             const rs = await this.model.findByIdAndUpdate(id, body, { new: true });
+    
+            if (!rs) {
+                return res.status(404).send("Post not found");
+            }
+    
             res.status(200).send(rs);
         } catch (error) {
             res.status(400).send(error);
         }
     };
+      
 
     async deleteItem(req: Request, res: Response) {
         const id = req.params.id;
         try {
             const rs = await this.model.findByIdAndDelete(id);
+            if (!rs) {
+            return res.status(404).send("Post not found");
+            }
             res.status(200).send(rs);
         } catch (error) {
             res.status(400).send(error);
