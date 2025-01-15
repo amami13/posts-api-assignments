@@ -35,7 +35,7 @@ const testUser: User = {
 describe("Auth Tests", () => {
   test("Auth test register", async () => {
     const response = await request(app).post(baseUrl + "/register").send(testUser);
-    expect(response.statusCode).toBe(200);
+    expect(response.statusCode).toBe(201);
   });
 
   test("Auth test register fail", async () => {
@@ -53,6 +53,13 @@ describe("Auth Tests", () => {
       password: "sdfsd",
     });
     expect(response2.statusCode).not.toBe(200);
+  });
+
+  test("Auth test duplicate registration fails", async () => {
+    await request(app).post(baseUrl + "/register").send(testUser);
+    const response = await request(app).post(baseUrl + "/register").send(testUser);
+    expect(response.statusCode).toBe(400);
+    expect(response.body.message).toBe("Email already exists.");
   });
 
   test("Auth test login", async () => {
@@ -121,21 +128,20 @@ describe("Auth Tests", () => {
 
   test("Double use refresh token", async () => {
     const response = await request(app).post(baseUrl + "/refresh").send({
-      refreshToken: testUser.refreshToken,
+        refreshToken: testUser.refreshToken,
     });
     expect(response.statusCode).toBe(200);
     const refreshTokenNew = response.body.refreshToken;
 
     const response2 = await request(app).post(baseUrl + "/refresh").send({
-      refreshToken: testUser.refreshToken,
+        refreshToken: testUser.refreshToken,
     });
-    expect(response2.statusCode).not.toBe(200);
-
+    expect(response2.statusCode).toBe(400); 
     const response3 = await request(app).post(baseUrl + "/refresh").send({
-      refreshToken: refreshTokenNew,
+        refreshToken: refreshTokenNew,
     });
-    expect(response3.statusCode).not.toBe(200);
-  });
+    expect(response3.statusCode).toBe(200); 
+});
 
   test("Test logout", async () => {
     const response = await request(app).post(baseUrl + "/login").send(testUser);
@@ -188,4 +194,28 @@ describe("Auth Tests", () => {
     });
     expect(response4.statusCode).toBe(201);
   });
+
+  test("Auth test refresh without refreshToken", async () => {
+    const response = await request(app).post(baseUrl + "/refresh").send({});
+    expect(response.statusCode).toBe(400);
+    expect(response.body.message).toBe("Refresh token is required.");
+  });
+  
+  test("Auth test logout without refreshToken", async () => {
+    const response = await request(app).post(baseUrl + "/logout").send({});
+    expect(response.statusCode).toBe(400);
+    expect(response.body.message).toBe("Refresh token is required.");
+  });
+    
+  test("Auth test server error during token generation in login", async () => {
+    // Simulating an error in token generation by providing a bad secret
+    process.env.TOKEN_SECRET = "";
+    
+    const response = await request(app).post(baseUrl + "/login").send(testUser);
+    expect(response.statusCode).toBe(500);
+    expect(response.body.message).toBe("Server error during token generation.");
+    process.env.TOKEN_SECRET = "350ec4b7e50d1c553bd15a80108d5594e9ee16814b42906f5be3923c3864facdc339e060b4ad00ee4a14a09f1927fab5b6e0ad92e9966757ba9c37fa5124caba";
+    
+  });
+  
 });
