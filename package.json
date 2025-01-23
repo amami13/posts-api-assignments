@@ -17,6 +17,8 @@
         "@types/connect-mongo": "^3.1.6",
         "@types/express-session": "^1.18.1",
         "@types/mongoose": "^5.11.97",
+        "@types/swagger-jsdoc": "^6.0.4",
+        "@types/swagger-ui-express": "^4.1.7",
         "axios": "^1.7.7",
         "bcrypt": "^5.1.1",
         "body-parser": "^1.20.3",
@@ -32,6 +34,7 @@
         "package-lock.json": "^1.0.0",
         "save-dev": "^0.0.1-security",
         "supertest": "^7.0.0",
+        "swagger": "^0.7.5",
         "ts-node": "^10.9.2",
         "twitter-api-v2": "^1.17.2",
         "uuid": "^10.0.0"

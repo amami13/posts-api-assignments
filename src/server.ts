@@ -6,6 +6,8 @@ import express, { Express } from "express";
 import posts_route from "./routes/post_routes";
 import comments_route from "./routes/comments_route";
 import user_route from "./routes/user_route";
+import swaggerJsDoc from "swagger-jsdoc";
+import swaggerUI from "swagger-ui-express";
 
 const app = express();
 app.use(bodyParser.json());
@@ -13,6 +15,22 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/posts", posts_route);
 app.use("/comments", comments_route);
 app.use("/auth", user_route);
+
+const options = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Web Dev 2025 REST API",
+      version: "1.0.0",
+      description: "REST server including authentication using JWT",
+    },
+    servers: [{ url: "http://localhost:3000", },],
+  },
+  apis: ["./src/routes/*.ts"],
+};
+const specs = swaggerJsDoc(options);
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
+
 
 const db = mongoose.connection;
 db.on("error", (error) => console.error(error));
