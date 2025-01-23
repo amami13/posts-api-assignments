@@ -59,6 +59,7 @@ import { authMiddleware } from "../controllers/usersController";
  *         description: Server error
  */
 router.get("/", postsController.getAll.bind(postsController));
+
 /**
  * @swagger
  * /posts/{id}:
@@ -87,6 +88,7 @@ router.get("/", postsController.getAll.bind(postsController));
  *         description: Server error
  */
 router.get("/:id", postsController.getById.bind(postsController));
+
 /**
  * @swagger
  * /posts:
@@ -126,6 +128,7 @@ router.get("/:id", postsController.getById.bind(postsController));
  *         description: Server error
  */
 router.post("/", authMiddleware, postsController.create.bind(postsController));
+
 /**
  * @swagger
  * /posts/{id}:
@@ -174,6 +177,7 @@ router.post("/", authMiddleware, postsController.create.bind(postsController));
  *         description: Server error
  */
 router.put("/:id", authMiddleware, postsController.updateItem.bind(postsController));
+
 /**
  * @swagger
  * posts/{id}:

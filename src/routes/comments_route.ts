@@ -42,10 +42,17 @@ import { authMiddleware } from "../controllers/usersController";
  * @swagger
  * /comments:
  *   get:
- *     summary: Get all comments
- *     description: Retrieve a list of all comments
+ *     summary: Get all comments or comments by owner
+ *     description: Retrieve a list of all comments or comments by owner. If the owner parameter is not supplied, all comments will be returned.
  *     tags:
  *       - Comments
+ *     parameters:
+ *       - in: query
+ *         name: owner
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: The ID of the owner
  *     responses:
  *       200:
  *         description: A list of comments
@@ -59,6 +66,7 @@ import { authMiddleware } from "../controllers/usersController";
  *         description: Server error
  */
 router.get("/", commentsController.getAll.bind(commentsController));
+
 /**
  * @swagger
  * /comments/{id}:
